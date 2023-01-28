@@ -1,8 +1,31 @@
 import Layout from "@/components/Layout";
+import Loading from "@/components/Loading";
+import { IAskForLyrics_return, askForLyrics } from "@/constants/functions";
 import { NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 
 const Index: NextPage = () => {
+  const [song, setSong] = useState({ name: "", artist: "" });
+  const [result, setResult] = useState<IAskForLyrics_return | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSearchSong = async () => {
+    setIsLoading(true);
+    const result = await askForLyrics(`${song.artist} - ${song.name}`);
+
+    setResult(result);
+    setIsLoading(false);
+  };
+
+  const handleRemoveSong = () => {
+    setResult(null);
+    setSong({ artist: "", name: "" });
+  };
+
+  const handleInput = (title: string, value: string) =>
+    setSong((val) => ({ ...val, [title]: value }));
+
   return (
     <>
       <Head>
@@ -12,7 +35,78 @@ const Index: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Layout>Test</Layout>
+        <Layout>
+          {isLoading && <Loading />}
+          <div className="card p-4">
+            <div className="d-flex mb-3">
+              <div className="w-100 mx-3">
+                <label className="form-label" htmlFor="song">
+                  Ingresa el nombre de la canción *
+                </label>
+                <input
+                  placeholder="Nombre de la canción"
+                  id="name"
+                  value={song.name}
+                  onChange={({ target: { id, value } }) =>
+                    handleInput(id, value)
+                  }
+                  className="form-control"
+                  type="text"
+                  disabled={isLoading || result !== null}
+                />
+              </div>
+              <div className="w-100 mx-3">
+                <label className="form-label" htmlFor="artist">
+                  Ingresa el nombre del artista
+                </label>
+                <input
+                  placeholder="Nombre del artista"
+                  id="artist"
+                  value={song.artist}
+                  onChange={({ target: { id, value } }) =>
+                    handleInput(id, value)
+                  }
+                  className="form-control"
+                  type="text"
+                  disabled={isLoading || result !== null}
+                />
+              </div>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mx-3">
+              <button
+                onClick={handleSearchSong}
+                className="btn btn-success"
+                disabled={isLoading || result !== null}
+              >
+                Buscar
+              </button>
+              {result !== null && (
+                <div className="">
+                  <button
+                    onClick={handleRemoveSong}
+                    className="btn btn-sm btn-warning"
+                    disabled={isLoading}
+                  >
+                    <i className="text-sm fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="mx-5 my-3">
+            <div className="h2">{result?.title}</div>
+            <i className="">{result?.artist}</i>
+            <div className="">
+              {result?.lyrics.map((item, i) => {
+                if (item === "\n") {
+                  return <div key={i} className="my-4" />;
+                }
+
+                return <div key={i}>{item}</div>;
+              })}
+            </div>
+          </div>
+        </Layout>
       </main>
     </>
   );
