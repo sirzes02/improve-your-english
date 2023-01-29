@@ -61,7 +61,7 @@ const Index: NextPage = () => {
                   Ingresa el nombre del artista
                 </label>
                 <input
-                  placeholder="Nombre del artista"
+                  placeholder="(Opcional) Nombre del artista"
                   id="artist"
                   value={song.artist}
                   onChange={({ target: { id, value } }) =>
