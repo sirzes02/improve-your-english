@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import Loading from "@/components/Loading";
+import TranslateValidation from "@/components/form/TranslateValidations";
 import { IAskForLyrics_return, askForLyrics } from "@/constants/functions";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -102,7 +103,7 @@ const Index: NextPage = () => {
                   return <div key={i} className="my-4" />;
                 }
 
-                return <div key={i}>{item}</div>;
+                return <TranslateValidation key={i} lyric={item} />;
               })}
             </div>
           </div>
